@@ -130,7 +130,7 @@ function updateProcessLane(lane: LaneState): LaneState {
         // IO task: quick progress, then wait
         if (task.progress < 30) {
           task.progress += IO_PROGRESS_SPEED;
-        } else if (!task.ioWaitTime) {
+        } else if (task.ioWaitTime === undefined) {
           // Start waiting
           task.status = 'WAITING_IO';
           task.ioWaitTime = IO_WAIT_TICKS;
@@ -203,7 +203,7 @@ function updateThreadLane(lane: LaneState): LaneState {
       if (task.type === 'IO') {
         if (task.progress < 30) {
           task.progress += IO_PROGRESS_SPEED;
-        } else if (!task.ioWaitTime) {
+        } else if (task.ioWaitTime === undefined) {
           task.status = 'WAITING_IO';
           task.ioWaitTime = IO_WAIT_TICKS;
         } else if (task.ioWaitTime > 0) {
@@ -279,6 +279,7 @@ function updateCoroutineLane(lane: LaneState): LaneState {
       // IO task: quickly hand off to waiting pool
       if (task.progress < 30) {
         task.progress += IO_PROGRESS_SPEED;
+        worker.currentTask = task;
       } else {
         // Hand off to waiting pool and take next task immediately
         task.status = 'WAITING_IO';
